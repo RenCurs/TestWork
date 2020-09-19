@@ -15,7 +15,7 @@ class Job extends Model
     private $id;
     private $username;
     private $email;
-    private $text;
+    public $text;
     private $isDone;
     private $isEdit;
     protected $fillable = ['username', 'email', 'text'];
