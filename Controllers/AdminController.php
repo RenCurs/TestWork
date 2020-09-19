@@ -25,6 +25,7 @@ class AdminController
         if(!empty($_POST))
         {
             $result = $job->update($_POST);
+            $job = $this->job->find('id', (int) $id);
         }
         return View::render('/admin/edit_job', ['job'=> $job, 'result'=> $result]);
     }

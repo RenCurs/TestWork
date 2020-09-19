@@ -5,6 +5,7 @@ namespace Service;
 class QueryBuilder
 {   
     private $sql = '';
+    private $type;
     private $parameters = [];
     private $db;
 
@@ -13,6 +14,54 @@ class QueryBuilder
         $this->db = Database::getInstance();
     }
 
+    public function getStrValuesInsert(array $column) : string
+    {   
+        $bindColumn = [];
+        foreach($column as $columnName=>$columnValue)
+        {
+            if(is_int($columnName))
+            {
+                $columnName = $columnValue;
+            }
+            $bindColumn[] = ':' . $columnName;
+        }
+        return implode(', ', $bindColumn);
+    }
+
+    public function getBindParams(array $data) : array
+    {
+        $bindParams = [];
+        foreach($data as $columnName=> $columnValue)
+        {
+            $bindParams[':' . $columnName] = $columnValue;
+        }
+        return $bindParams;
+    }  
+    
+    public function getStrColumnsInsert(array $data) : string
+    {
+        $str = [];
+        foreach($data as $columnName=>$columnValue)
+        {
+            $str[] = $columnName;
+        }
+        return implode(', ', $str);
+    } 
+    
+    public function getStrColumnsUpdate($data) : string
+    {
+        $arr = [];
+        foreach($data as $columnName=>$columnValue)
+        {
+            if(is_int($columnName))
+            {
+                $columnName = $columnValue;
+            }
+            $arr[] = $columnName . '=:' .$columnName;
+        }
+        return implode(', ', $arr);
+    }
+    
     public function select( string $table, string ...$columns)
     {
         $columns = (empty($columns)) ? '*' : implode(',', $columns);
@@ -20,53 +69,65 @@ class QueryBuilder
         return $this;
     }
 
-    public function insert(string $table, array $columns, array $preparedData = []) // переписать
+    public function insert(string $table)
     {
-        $strColumn = implode(', ', $columns);
-
-        $PreparedColumn = array_map(function($item){
-            return ':' . $item;
-        }, $columns);
-        $strPreparedColumn = implode(', ', $PreparedColumn);
-
-        $this->sql = 'INSERT INTO ' . $table . ' (' . $strColumn . ') VALUES (' . $strPreparedColumn . ')';
-        $this->parameters = $preparedData;
+        $this->type = 'insert';
+        $this->sql = 'INSERT INTO ' . $table;
         return $this;
     }
 
-    public function update(string $table, $data)
+    public function values($data)
     {
         if(!is_object($data))
         {
-            foreach($data as $fieldName=>$fieldValue)
+            if($this->type === 'insert')
             {
-                $strPreparedColumn = $fieldName . '=:' . $fieldName;
-                $preparedParameters[':' . $fieldName] = $fieldValue;
+                $strColumns = $this->getStrColumnsInsert($data);
+                $strValuesInsert = $this->getStrValuesInsert($data);
+                $bindParams = $this->getBindParams($data);
+                $this->sql .= '(' . $strColumns . ' ) VALUES (' . $strValuesInsert. ')';
+                $this->parameters = $bindParams;
+                return $this;
             }
-            $this->sql = 'UPDATE ' . $table . ' SET ' . $strPreparedColumn;
-            $this->parameters = $preparedParameters;
-            return $this;
+            elseif($this->type === 'update')
+            {
+                $strColumns = $this->getStrColumnsUpdate($data);
+                $bindParams = $this->getBindParams($data);
+                $this->sql .= ' SET ' . $strColumns;
+                $this->parameters = $bindParams;
+                return $this;
+            }
+
         }
         elseif(is_object($data))
         {
             $object = $data;
-            $columns = $object->getFillable();
-            unset($columns[array_search('id', $columns)]);
-    
-            $strPreparedColumns = array_map(function($item){
-                if($item !== 'id')
-                {
-                    return $item . '=:' . $item;
-                }
-            },  $columns);
-    
-            $strPreparedColumn = implode(', ', $strPreparedColumns);
-            $this->sql = 'UPDATE ' . get_class($object)::getTable() . ' SET ' . $strPreparedColumn;
-            $this->parameters = $object->getPropertiesObject();
-            unset($this->parameters['id']);
-            return $this;
+            if($this->type === 'insert')
+            {
+                $strColumns = implode(', ', $data->getFillable());
+                $strValuesInsert = $this->getStrValuesInsert($data->getFillable());
+                $bindParams = $object->getPropertiesObject();
+                $this->sql .= '(' . $strColumns . ' ) VALUES (' . $strValuesInsert. ')';
+                $this->parameters = $bindParams;
+                return $this;
+            }
+            elseif($this->type === 'update')
+            {
+                $strColumns = $this->getStrColumnsUpdate($object->getFillable());
+                $bindParams = $object->getPropertiesObject();
+                $this->sql .= ' SET ' . $strColumns;
+                $this->parameters = $bindParams;
+                return $this;
+            }
         }
         return false;
+    }
+
+    public function update(string $table)
+    {
+        $this->type = 'update';
+        $this->sql = 'UPDATE ' . $table;
+        return $this;
     }
 
     public function where(array $where, $operator = '=')

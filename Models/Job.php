@@ -15,10 +15,10 @@ class Job extends Model
     private $id;
     private $username;
     private $email;
-    public $text;
+    private $text;
     private $isDone;
     private $isEdit;
-    protected $fillable = ['id','username', 'email', 'text'];
+    protected $fillable = ['username', 'email', 'text'];
 
     protected static $table = 'jobs';
     protected static $class = self::class;
@@ -66,6 +66,7 @@ class Job extends Model
     {
         return $this->fillable;
     }
+
     public function paginate(int $recordsPerPage)
     {
         return self::$dependency['paginator']->paginate($recordsPerPage);
@@ -100,7 +101,7 @@ class Job extends Model
         {
             return  self::$dependency['qb']->update();
         }
-        self::$dependency['qb']->insert(self::getTable(), $this->fillable, $this->getPropertiesObject())->execute(self::getClass());
+        self::$dependency['qb']->insert(self::getTable())->values($this)->execute();
         return true;
     }
 
@@ -108,10 +109,10 @@ class Job extends Model
     {
         if(!empty($data))
         {
-           self::$dependency['qb']->update(self::getTable(), $data)->where(['id' => $this->id])->execute();
+           self::$dependency['qb']->update(self::getTable())->values($data)->where(['id' => $this->id])->execute();
            return true;
         }
-        self::$dependency['qb']->update(self::getTable(), $this)->where(['id' => $this->id])->execute();
+        self::$dependency['qb']->update(self::getTable())->values($this)->where(['id' => $this->id])->execute();
         return true;
     }
 }

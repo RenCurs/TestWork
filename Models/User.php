@@ -22,7 +22,7 @@ class User extends Model
     protected static $table = 'users';
     protected static $class = self::class;
 
-    protected $fillable = ['id','username', 'email', 'password'];
+    protected $fillable = ['username', 'email', 'password'];
 
     public function __construct(UserValidator $validator, QueryBuilder $qb)
     {
@@ -46,6 +46,11 @@ class User extends Model
         return $this->isAdmin;
     }
 
+    public function getFillable() 
+    {
+        return $this->fillable;
+    }
+    
     protected function rules():array
     {
         return [
@@ -94,7 +99,8 @@ class User extends Model
 
     public function save()
     {
-        $result = self::$dependency['qb']->insert(self::getTable(), $this->fillable, $this->getPropertiesObject())->execute();
+        //$result = self::$dependency['qb']->insert(self::getTable(), $this->fillable, $this->getPropertiesObject())->execute();
+        $result = self::$dependency['qb']->insert(self::getTable())->values($this)->execute();
         return true;
     }
 
