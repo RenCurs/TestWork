@@ -41,11 +41,6 @@ class JobPaginator extends AbstractPaginator
         $this->total_pages = ceil($allRecords / $recordsPerPage);
 
         $jobs = $this->qb->select(Job::getTable())->sort($sort)->limit($recordsPerPage)->offset($offset)->execute(Job::getClass());
-
-        //$jobs = $this->qb->select($this->table)->limit($recordsPerPage)->offset($offset)->execute(Job::getClass());
-        // $sql = 'SELECT * FROM ' . $this->table . ' '. $sort .' LIMIT ' . $recordsPerPage . ' OFFSET ' .$offset;
-        // $jobs = $this->db->query($sql,[], 'Models\Job');
-
         return ['jobs'=> $jobs, 'paginator'=>$this];
     }
 

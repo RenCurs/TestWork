@@ -8,7 +8,7 @@ abstract class AbstractPaginator
 {
     protected $page = 1;
     protected $total_pages;
-    protected $links = 5;
+    protected $links = 3;
     protected $sort_name = '';
     protected $db;
 

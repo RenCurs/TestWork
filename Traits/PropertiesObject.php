@@ -4,7 +4,7 @@ namespace Traits;
 
 trait PropertiesObject
 {
-    protected function getPropertiesObject()
+    public function getPropertiesObject()
     {
         foreach($this as $key=>$value)
         {

@@ -42,7 +42,7 @@ class Database
         return self::$instance;
     }
 
-    public function query(string $sql, array $params = [], $class = 'stdClass')
+    public function query(string $sql, array $params = [], $class = 'stdClass', $dependency = [])
     {
         $statement = $this->driver->prepare($sql);
         $result = $statement->execute($params);
@@ -51,6 +51,6 @@ class Database
         {
             return null;
         }
-        return $statement->fetchAll(\PDO::FETCH_CLASS, $class);
+        return $statement->fetchAll(\PDO::FETCH_CLASS, $class, $dependency);
     }
 }

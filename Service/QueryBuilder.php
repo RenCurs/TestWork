@@ -20,7 +20,7 @@ class QueryBuilder
         return $this;
     }
 
-    public function insert(string $table, array $columns, array $preparedData = [])
+    public function insert(string $table, array $columns, array $preparedData = []) // переписать
     {
         $strColumn = implode(', ', $columns);
 
@@ -34,7 +34,40 @@ class QueryBuilder
         return $this;
     }
 
-    public function values(){}
+    public function update(string $table, $data)
+    {
+        if(!is_object($data))
+        {
+            foreach($data as $fieldName=>$fieldValue)
+            {
+                $strPreparedColumn = $fieldName . '=:' . $fieldName;
+                $preparedParameters[':' . $fieldName] = $fieldValue;
+            }
+            $this->sql = 'UPDATE ' . $table . ' SET ' . $strPreparedColumn;
+            $this->parameters = $preparedParameters;
+            return $this;
+        }
+        elseif(is_object($data))
+        {
+            $object = $data;
+            $columns = $object->getFillable();
+            unset($columns[array_search('id', $columns)]);
+    
+            $strPreparedColumns = array_map(function($item){
+                if($item !== 'id')
+                {
+                    return $item . '=:' . $item;
+                }
+            },  $columns);
+    
+            $strPreparedColumn = implode(', ', $strPreparedColumns);
+            $this->sql = 'UPDATE ' . get_class($object)::getTable() . ' SET ' . $strPreparedColumn;
+            $this->parameters = $object->getPropertiesObject();
+            unset($this->parameters['id']);
+            return $this;
+        }
+        return false;
+    }
 
     public function where(array $where, $operator = '=')
     {
@@ -66,7 +99,6 @@ class QueryBuilder
         return $this;
     }
 
-
     public function count(string $table, string $column = '*', bool $distinct = false)
     {
         $this->sql = 'SELECT COUNT(' . $column . ') FROM ' .$table;
@@ -86,6 +118,8 @@ class QueryBuilder
             $query->execute();
             return $query->fetchColumn();
         }
-        return $this->db->query($this->sql, $this->parameters, $className);
+        
+        return $this->db->query($this->sql, $this->parameters, $className,
+                                (method_exists($className, 'getDependency') ? $className::getDependency() : []));
     }
 }

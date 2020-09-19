@@ -13,8 +13,8 @@ class MainController
     }
 
     public function index()
-    {   
-        $jobsAndPaginator = $this->job->paginate(4);
+    { 
+        $jobsAndPaginator = $this->job->paginate(5);
         extract($jobsAndPaginator);
         return View::render('index', ['jobs' => $jobs, 'paginator'=>$paginator]);
     }

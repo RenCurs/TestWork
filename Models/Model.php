@@ -13,9 +13,6 @@ abstract class Model
         $this->db = Database::getInstance();
     }
 
-    abstract function save();
-    abstract function update();
-    
     public static function getClass()
     {
         return static::$class;
@@ -26,10 +23,15 @@ abstract class Model
         return static::$table;
     }
 
+    public static function getDependency()
+    {
+        return static::$dependency;
+    }
+
     public function find($fieldName, $fieldValue)
     {
         $sql = 'SELECT * FROM ' . static::getTable() . ' WHERE ' . $fieldName . '=:fieldValue';
-        $result = $this->db->query($sql, [':fieldValue'=> $fieldValue],  static::getClass());
+        $result = $this->db->query($sql, [':fieldValue'=> $fieldValue],  static::getClass(), static::getDependency());
         if(!empty($result))
         {
             return $result[0];

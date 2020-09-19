@@ -22,13 +22,14 @@ class Job extends Model
 
     protected static $table = 'jobs';
     protected static $class = self::class;
+    protected static $dependency = [];
 
-    public  function __construct(JobPaginator $paginator = null, JobValidator $validator = null, QueryBuilder $qb = null)
+    public  function __construct(JobPaginator $paginator, JobValidator $validator, QueryBuilder $qb)
     {
         parent::__construct();
-        $this->paginator = $paginator;
-        $this->validator = $validator;
-        $this->qb = $qb;
+        self::$dependency['paginator'] = $paginator;
+        self::$dependency['validator'] = $validator;
+        self::$dependency['qb'] = $qb;
     }
 
     public function getId():int
@@ -61,9 +62,13 @@ class Job extends Model
         return $this->isEdit;
     }
 
+    public function getFillable() 
+    {
+        return $this->fillable;
+    }
     public function paginate(int $recordsPerPage)
     {
-        return $this->paginator->paginate($recordsPerPage);
+        return self::$dependency['paginator']->paginate($recordsPerPage);
     }
 
     public function rules():array
@@ -76,9 +81,9 @@ class Job extends Model
 
     public function create(array $data)
     {
-        $this->validator->validate($data, $this->rules());
+        self::$dependency['validator']->validate($data, $this->rules());
 
-        if(empty($this->validator->getErrors()))
+        if(empty(self::$dependency['validator']->getErrors()))
         {
             $this->username = trim($data['username']);;
             $this->email = trim($data['email']);
@@ -86,23 +91,16 @@ class Job extends Model
 
             return $this->save();
         }
-        return $this->validator->getErrors();
+        return self::$dependency['validator']->getErrors();
     }  
 
     public function save()
     {     
         if($this->id)
         {
-            return  $this->qb->update();
+            return  self::$dependency['qb']->update();
         }
-
-        $this->qb->insert(self::getTable(), $this->fillable, $this->getPropertiesObject())->execute(self::getClass());
-
-        // $sql = 'INSERT INTO ' . $this->getTable() . ' (id, username, email, text) VALUES(:id, :username, :email, :text)';
-        // $params = $this->getPropertiesObject();
-        // $this->db->query($sql, $params, self::class);
-        // $this->id = $this->db->getLastInsertId();
-
+        self::$dependency['qb']->insert(self::getTable(), $this->fillable, $this->getPropertiesObject())->execute(self::getClass());
         return true;
     }
 
@@ -110,22 +108,10 @@ class Job extends Model
     {
         if(!empty($data))
         {
-            foreach ($data as $key=>$value)
-            {
-               if(property_exists($this, $key))
-               {
-                   $this->$key = $value;
-                   $update = 'SET ' . $key . '= :' . $key;
-                   $params[':' . $key] = $value;
-               }
-            }
-            $sql = 'UPDATE ' . $this->getTable(). ' ' . $update .' where id='. $this->id;
-            $this->db->query($sql, $params , $this->getClass());
-            return true;
+           self::$dependency['qb']->update(self::getTable(), $data)->where(['id' => $this->id])->execute();
+           return true;
         }
-        $params = $this->getPropertiesObject();
-        $sql = 'UPDATE '. $this->getTable() . ' SET username=:username, email=:email, text=:text where id=:id';
-        $this->db->query($sql, $params , $this->getClass());
+        self::$dependency['qb']->update(self::getTable(), $this)->where(['id' => $this->id])->execute();
         return true;
     }
 }

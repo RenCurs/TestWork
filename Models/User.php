@@ -2,8 +2,9 @@
 namespace Models;
 
 use Validators\UserValidator;
+use Service\QueryBuilder;
 use Models\Model;
-use Service\DIContainer;
+
 use Traits\PropertiesObject;
 
 class User extends Model
@@ -17,15 +18,17 @@ class User extends Model
     private $isAdmin = 0;
     private $validator;
 
+    protected static $dependency = [];
     protected static $table = 'users';
     protected static $class = self::class;
 
     protected $fillable = ['id','username', 'email', 'password'];
 
-    public function __construct(UserValidator $validator = null)
+    public function __construct(UserValidator $validator, QueryBuilder $qb)
     {
         parent::__construct();
-        $this->validator = $validator;
+        self::$dependency['validator'] = $validator;
+        self::$dependency['qb'] = $qb;
     }
 
     public function getUserName()
@@ -58,16 +61,16 @@ class User extends Model
 
     public function create(array $userData)
     {
-        $this->validator->validate($userData, $this->rules());
+        self::$dependency['validator']->validate($userData, $this->rules());
     
-        if(empty($this->validator->getErrors()))
+        if(empty(self::$dependency['validator']->getErrors()))
         {
             $this->username = trim($userData['username']);
             $this->email = trim($userData['email']);
             $this->password = password_hash(trim($userData['password']), PASSWORD_DEFAULT);
             return $this->save();
         }
-        return $this->validator->getErrors();
+        return self::$dependency['validator']->getErrors();
     }
 
     public function login(array $data)
@@ -91,9 +94,7 @@ class User extends Model
 
     public function save()
     {
-        $params = $this->getPropertiesObject();
-        $sql = 'INSERT INTO ' . $this->table .' (id, username, email, password) VALUES(:id, :username, :email, :password)';
-        $this->db->query($sql, $params, $this->class);
+        $result = self::$dependency['qb']->insert(self::getTable(), $this->fillable, $this->getPropertiesObject())->execute();
         return true;
     }
 
