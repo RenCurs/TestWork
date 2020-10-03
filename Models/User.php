@@ -5,11 +5,11 @@ use Validators\UserValidator;
 use Service\QueryBuilder;
 use Models\Model;
 
-use Traits\PropertiesObject;
+use Traits\PreparedPropertiesObject;
 
 class User extends Model
 {
-    use PropertiesObject;
+    use PreparedPropertiesObject;
 
     private $id;
     private $username;
@@ -59,7 +59,7 @@ class User extends Model
         ];
     }
 
-    private function verifyPassword( string $password, string $passwordHash)
+    private function verifyPassword(string $password, string $passwordHash)
     {
         return password_verify($password, $passwordHash);
     }
@@ -99,7 +99,6 @@ class User extends Model
 
     public function save()
     {
-        //$result = self::$dependency['qb']->insert(self::getTable(), $this->fillable, $this->getPropertiesObject())->execute();
         $result = self::$dependency['qb']->insert(self::getTable())->values($this)->execute();
         return true;
     }

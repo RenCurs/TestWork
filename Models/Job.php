@@ -6,11 +6,11 @@ use Validators\JobValidator;
 use Paginators\JobPaginator;
 use Service\QueryBuilder;
 
-use Traits\PropertiesObject;
+use Traits\PreparedPropertiesObject;
 
 class Job extends Model
 {
-    use PropertiesObject;
+    use PreparedPropertiesObject;
 
     private $id;
     private $username;

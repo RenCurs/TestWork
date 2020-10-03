@@ -7,16 +7,16 @@ use Models\Job;
 
 class JobController
 {
-    public function __construct(Job $jobs)
+    public function __construct(Job $job)
     {
-        $this->jobs = $jobs;
+        $this->job = $job;
     }
 
     public function create()
     {
         if(!empty($_POST))
         {
-            $result = $this->jobs->create($_POST);
+            $result = $this->job->create($_POST);
             if($result !== true)
             {
                 return View::render('jobs/create', ['errors' => $result]);

@@ -2,7 +2,7 @@
 
 namespace Traits;
 
-trait PropertiesObject
+trait PreparedPropertiesObject
 {
     public function getPropertiesObject()
     {

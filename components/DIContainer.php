@@ -2,7 +2,6 @@
 
 class DIContainer
 {
-    private  $instances = [];
     private $class;
 
     public function get($class)

@@ -18,7 +18,7 @@ class AdminController
         $this->job = $job;
     }
 
-    public function edit($id)
+    public function edit(int $id)
     {  
         $result = false;
         $job = $this->job->find('id', (int) $id);
@@ -34,8 +34,8 @@ class AdminController
     {
         if(!empty($_POST['id']))
         {
-            $IdJob = (int) $_POST['id'];
-            $job = $this->job->find('id', $IdJob);
+            $idJob = (int) $_POST['id'];
+            $job = $this->job->find('id', $idJob);
             if($job->isDone() == 0)
             {
                 $job->update(['isDone' => 1]);
