@@ -36,6 +36,11 @@ class User extends Model
         return $this->username;
     }
 
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
     public function getPasswordHash()
     {
         return $this->password;
@@ -90,6 +95,8 @@ class User extends Model
             if($this->verifyPassword($userData['password'], $user->getPasswordHash()))
             {
                 $_SESSION['user'] = $user->username;
+                $_SESSION['user_email'] = $user->email;
+                $_SESSION['user_id'] = $user->id;
                 $_SESSION['admin'] = $user->getIsAdmin();
                 return true;
             }

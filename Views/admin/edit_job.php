@@ -2,14 +2,6 @@
 
 <div class="container">
         <h2>Редактирование задачи</h2>
-
-        <?php if(isset($result) && $result === true):?>
-            <div class="alert alert-success fade show">
-                Задача успешно отредактирована
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
-            </div>
-        <?php endif;?>
-
         <div class="wrap-form col-5">
             <form action="#" method="POST">
                 <div class="form-group">
@@ -26,6 +18,7 @@
                 </div>
                 <div class="form-group">
                     <button class="btn btn-success" type="submit">Редактировать</button>
+                    <a type="button" class="btn btn-success" onclick="window.location.href = '/'">На главную</a>
                 </div>
             </form>
         </div>

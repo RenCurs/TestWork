@@ -16,7 +16,8 @@
                 <form action="/login" method="POST">
                     <div class="form-group">
                         <label for="exampleInputEmail1">Email</label>
-                        <input  required type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="email">
+                        <input  required type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="email"
+                        value="<?=  $_POST['email'] ?? ''?>">
                     </div>
                     <div class="form-group">
                         <label for="exampleInputPassword1">Пароль</label>

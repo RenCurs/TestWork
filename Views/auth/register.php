@@ -30,6 +30,7 @@
                         <input required type="password" class="form-control" id="exampleInputPassword1" name="password">
                     </div>
                     <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+                    <a type="button" class="btn btn-primary" href="/login/show">Войти</a>
                 </form>
             </div>
         </div>

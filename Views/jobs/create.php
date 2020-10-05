@@ -9,21 +9,18 @@
             <?php endforeach ?>    
         <?php endif?>
         
-        <?php if(isset($result) && $result === true ):?>
-            <p>Задача добавлена</p>
-        <?php endif?>
-
-
         <h2>Добавление задачи</h2>
         <div class="wrap-form">
-            <form action="/jobs/create" method="POST">
+            <form action="/jobs/store" method="POST">
                 <div class="form-group">
                     <lable>Имя пользователя</lable>
-                    <input required class="form-control" type="text" name="username" value="<?= $_POST['username'] ?? ''?>">
+                    <input required class="form-control" type="text" name="username"
+                        value="<?= (isset($_SESSION['user'])) ? $_SESSION['user'] : $_POST['username'] ??  ''?>">
                 </div>
                 <div class="form-group">
                     <lable>e-mail</lable>
-                    <input required class="form-control" type="email" name="email" value="<?= $_POST['email'] ?? ''?>">
+                    <input required class="form-control" type="email" name="email" 
+                        value="<?= (isset($_SESSION['user_email'])) ? $_SESSION['user_email'] : $_POST['email'] ??  ''?>">
                 </div>
                 <div class="form-group">
                     <lable>Текст задачи</lable>

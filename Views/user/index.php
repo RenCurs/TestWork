@@ -1,17 +1,4 @@
-<?php require_once __DIR__ . '/layouts/header.php'?>
-
-
-<?php if(isset($_COOKIE['job_result'])): ?>
-    <div class="alert alert-success col-lg-6 m-auto">
-        <?= $_COOKIE['job_result'] ?>
-    </div>
-<?php endif ?>
-
-<?php if(isset($_COOKIE['editJob_result'])): ?>
-   <div class="alert alert-success col-lg-6 m-auto">
-       <?= $_COOKIE['editJob_result'] ?>
-   </div>
-<?php endif ?>
+<? require_once __DIR__ . ('/../layouts/header.php');?>
 
 <div class="container">
     <div class="row">
@@ -46,20 +33,14 @@
                 <thead>
                     <tr>
                         <th scope="col">
+
                             <div class="row">
-                                <span>username
-                                <a class="text-decoration-none" style="font-size: 25px" href="/?sort=username_up">↑</a>
-                                <a class="text-decoration-none" style="font-size: 25px" href="/?sort=username_down">↓</a>
-                                </span>
+                                <span>username</span>
                             </div>
                         </th>
                         <th scope="col">Еmail
-                            <a class="text-decoration-none" style="font-size: 25px" href="/?sort=email_up">↑</a>
-                            <a class="text-decoration-none" style="font-size: 25px" href="/?sort=email_down">↓</a>
                         </th>
                         <th scope="col">Текст задачи
-                            <a class="text-decoration-none" style="font-size: 25px" href="/?sort=text_up">↑</a>
-                            <a class="text-decoration-none" style="font-size: 25px" href="/?sort=text_down">↓</a>
                         </th>
                         <th scope="col"></th>
                         <th scope="col"></th>
@@ -122,46 +103,12 @@
                     <?php endif ?>
                 </tbody>
             </table>
-
-            <div class="paginate">
-                <nav aria-label="Page navigation example">
-                    <ul class="pagination">
-                        <?php if($paginator->getCurrPage() === 1):?>
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
-                            </li>
-                        <?php else:?>
-                            <li class="page-item">
-                                <a class="page-link"  href="/?page=<?= $paginator->getCurrPage()-1 ?>&sort=<?= $paginator->getSort()?>" tabindex="-1" aria-disabled="true">Previous</a>
-                            </li>
-                        <?php endif;?>
-
-                        <?php for($i = $paginator->getStart(); $i <= $paginator->getEnd(); $i++):?>
-                            <?php if($paginator->getCurrPage() === $i):?>
-                                <li class="page-item active"><a class="page-link" href="/?page=<?= $i?>&sort=<?= $paginator->getSort()?>"><?= $i?></a></li>
-                            <?php else:?>
-                                <li class="page-item"><a class="page-link" href="/?page=<?= $i?>&sort=<?= $paginator->getSort()?>"><?= $i?></a></li>
-                            <?php endif;?>
-                        <?php endfor;?>
-                        
-                        <?php if($paginator->getCurrPage() === $paginator->getLast() ):?>
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Next</a>
-                            </li>
-                        <?php else:?>
-                            <li class="page-item">
-                                <a class="page-link" href="/?page=<?= $paginator->getCurrPage()+1?>&sort=<?= $paginator->getSort()?>" tabindex="-1" aria-disabled="true">Next</a>
-                            </li>
-                        <?php endif;?>
-                    </ul>
-                </nav>
-            </div>
         </div>
     </div>
 </div>
 
 
-<?php require_once __DIR__ . '/layouts/footer.php' ?>
+<? require_once __DIR__ . ('/../layouts/footer.php');?>
 
 <script>
     $(document).ready(function(){

@@ -3,21 +3,27 @@ namespace Controllers;
 
 use Service\View;
 use Models\User;
+use Models\Job;
 
 class UserController
 {
     private $user;
 
-    public function __construct(User $user)
+    public function __construct(User $user, Job $job)
     {
         $this->user = $user;
+        $this->job = $job;
     }
 
     public function logout()
     {
-        unset($_SESSION['user']);
-        unset($_SESSION['admin']);
+        session_unset();
         return \header('Location: /');
+    }
+
+    public function showLogin()
+    {
+        return View::render('auth/login');
     }
 
     public function login()
@@ -31,9 +37,14 @@ class UserController
             }
             return View::render('auth/login', ['error'=> $result]);
         }
-        return View::render('auth/login');
+        return header('Location: /login/show');
     }
 
+    public function showRegister()
+    {
+        return View::render('auth/register');
+    }
+    
     public function register()
     {
         if(!empty($_POST))
@@ -45,7 +56,12 @@ class UserController
             }
             return View::render('auth/register', ['result' => $result]);
         }
-        return View::render('auth/register');
-    }
+        return header('Location: /register/show');
+    } 
 
+    public function myJobs(int $idUser)
+    {
+        $jobs = $this->job->myJobs($idUser);
+        return View::render('user/index', ['jobs' => $jobs]);
+    }
 }
